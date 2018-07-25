@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.smbms.dao.SmbmsUserDao">  
+	<insert id="saveUser" parameterType="SmbmsUser">
+		INSERT INTO 
+			`smbms`.`smbms_user` 
+				(`id`, `userCode`, `userName`, 
+				`userPassword`, `gender`, `birthday`,
+				 `phone`, `address`, `userRole`, 
+				 `createdBy`, `creationDate`, `modifyBy`, 
+				 `modifyDate`, `idPicPath`, `idWebPath`
+				 ) 
+		VALUES (default, #{userCode}, #{userName}, #{userPassword}, #{gender}, #{birthday}, 
+			#{phone}, #{address}, #{userRole}, #{createdBy}, #{creationDate}, #{modifyBy}, 
+			#{modifyDate}, #{idPicPath}, #{idWebPath})
+	</insert>
+	<update id="updateUser" parameterType="SmbmsUser">
+		UPDATE 
+			`smbms`.`smbms_user` 
+		<trim prefix="set"  suffixOverrides=",">
+			<if test="userCode != null">`userCode`=#{userCode}, </if>
+			<if test="userName != null">`userName`=#{userName},  </if>
+			<if test="userPassword != null">`userPassword`=#{userPassword},  </if>
+			<if test="gender != null">`gender`=#{gender},  </if>
+			<if test="birthday != null">`birthday`=#{birthday},  </if>
+			<if test="phone != null">`phone`=#{phone},  </if>
+			<if test="address != null">`address`=#{address},  </if>
+			<if test="userRole != null">`userRole`=#{userRole},  </if>
+			<if test="createdBy != null">`createdBy`=#{createdBy},  </if>
+			<if test="creationDate != null">`creationDate`=#{creationDate},  </if>
+			<if test="modifyBy != null">`modifyBy`=#{modifyBy}, </if>
+			<if test="modifyDate != null">`modifyDate`=#{modifyDate},  </if>
+			<if test="idPicPath != null">`idPicPath`=#{idPicPath},  </if>
+			<if test="idWebPath != null">`idWebPath`=#{idWebPath},  </if>
+		</trim>
+		WHERE `id`=#{id};
+	</update>
+	<delete id="deleteUser" parameterType="SmbmsUser">
+		delete from `smbms`.`smbms_user`
+		<where>
+			<if test="id!=null">id = #{id}</if>
+			<if test="userRole!=null">and userRole = #{userRole}</if>
+		</where>
+	</delete>
+    <select id="findUserList" resultMap="users">  
+        select 
+        	su.*,sr.roleName
+        from 
+        	smbms_user su
+        inner join smbms_role sr on su.userRole = sr.id
+        <where>
+        	<if test="user.userRole!=null">userRole = #{user.userRole}</if>
+        	<if test="user.userCode!=null">and userCode = #{user.userCode}</if>
+        	<if test="user.userName!=null">and userName like concat('%',#{user.userName},'%')</if>
+       	</where>
+       	<if test="firstResult!=null and maxResults!=null">
+       		limit #{firstResult},#{maxResults}
+       	</if>
+    </select>
+    
+    <select id="findUser" resultMap="users">  
+        select 
+        	su.*,sr.roleName
+        from 
+        	smbms_user su
+        inner join smbms_role sr on su.userRole = sr.id
+        <where>
+        	<if test="userRole!=null">userRole = #{userRole}</if>
+        	<if test="userCode!=null">and userCode = #{userCode}</if>
+        	<if test="userName!=null">and userName like concat('%',#{userName},'%')</if>
+        	<if test="id!=null">and su.id = #{id}</if>
+       	</where>
+    </select>
+    
+    <select id="login" resultType="SmbmsUser">  
+        select 
+        	*
+        from 
+        	smbms_user
+        <where>
+        	<if test="userCode!=null">userCode = #{userCode}</if>
+        	<if test="userPassword!=null">and userPassword = #{userPassword}</if>
+       	</where>
+    </select>
+    
+    <select id="totalCount" resultType="int">
+    	select count(1) from smbms_user
+        <where>
+        	<if test="userRole!=null">userRole = #{userRole}</if>
+        	<if test="userCode!=null">and userCode = #{userCode}</if>
+        	<if test="userName!=null">and userName like concat('%',#{userName},'%')</if>
+       	</where>
+    </select>
+    
+    <resultMap type="SmbmsUser" id="users">
+    	<result column="roleName" property="userRoleName"/>
+    </resultMap>
+</mapper>

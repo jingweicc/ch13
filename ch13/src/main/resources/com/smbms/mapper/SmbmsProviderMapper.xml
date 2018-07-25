@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.smbms.dao.SmbmsProviderDao">  
+	<insert id="saveProvider" parameterType="SmbmsProvider">
+		INSERT INTO 
+			`smbms`.`smbms_provider` 
+				(id,`proCode`, `proName`,  
+				`proDesc`, `proContact`, `proPhone`,
+				 `proAddress`, `proFax`, `createdBy`, 
+				 `creationDate`, `modifyDate`, `modifyBy`,license,certificate
+				 ) 
+		VALUES (default, #{proCode}, #{proName}, #{proDesc}, #{proContact}, #{proPhone}, 
+			#{proAddress}, #{proFax}, #{createdBy}, #{creationDate}, #{modifyDate}, 
+			#{modifyBy},#{license},#{certificate})
+	</insert>
+	<update id="updateProvider" parameterType="SmbmsProvider">
+		UPDATE 
+			`smbms`.`smbms_provider` 
+		<trim prefix="set"  suffixOverrides=",">
+			<if test="proCode != null">`proCode`=#{proCode}, </if>
+			<if test="proName != null">`proName`=#{proName},  </if>
+			<if test="proDesc != null">`proDesc`=#{proDesc},  </if>
+			<if test="proContact != null">`proContact`=#{proContact},  </if>
+			<if test="proPhone != null">`proPhone`=#{proPhone},  </if>
+			<if test="proAddress != null">`proAddress`=#{proAddress},  </if>
+			<if test="proFax != null">`proFax`=#{proFax},  </if>
+			<if test="createdBy != null">`createdBy`=#{createdBy},  </if>
+			<if test="creationDate != null">`creationDate`=#{creationDate},  </if>
+			<if test="modifyBy != null">`modifyBy`=#{modifyBy}, </if>
+			<if test="modifyDate != null">`modifyDate`=#{modifyDate},  </if>
+			<if test="license != null">`license`=#{license},  </if>
+			<if test="certificate != null">`certificate`=#{certificate},  </if>
+		</trim>
+		WHERE `id`=#{id};
+	</update>
+	<delete id="deleteProvider" parameterType="SmbmsProvider">
+		delete from `smbms`.`smbms_provider`
+		<where>
+			<if test="id!=null">id = #{id}</if>
+		</where>
+	</delete>
+    <select id="findProviderList" resultType="SmbmsProvider">  
+        select 
+        	*
+        from 
+        	smbms_provider
+        <where>
+        	<if test="provider.proCode!=null">proCode like concat('%',#{provider.proCode},'%')</if>
+        	<if test="provider.proName!=null">and proName like concat('%',#{provider.proName},'%')</if>
+       	</where>
+       	<if test="firstResult!=null and maxResults!=null">
+       		limit #{firstResult},#{maxResults}
+       	</if>
+    </select>
+    
+    <select id="findProvider" resultType="SmbmsProvider">  
+        select 
+        	*
+        from 
+        	smbms_provider
+        <where>
+        	<if test="provider.id !=null">id = #{provider.id}</if>
+        	<if test="provider.proCode!=null">and proCode like concat('%',#{provider.proCode},'%')</if>
+        	<if test="provider.proName!=null">and proName like concat('%',#{provider.proName},'%')</if>
+       	</where>
+    </select>
+    
+    <select id="proTotalCount" resultType="int">
+    	select count(1) from smbms_provider
+        <where>
+        	<if test="provider.proCode!=null">and proCode like concat('%',#{provider.proCode},'%')</if>
+        	<if test="provider.proName!=null">and proName like concat('%',#{provider.proName},'%')</if>
+       	</where>
+    </select>
+</mapper>
